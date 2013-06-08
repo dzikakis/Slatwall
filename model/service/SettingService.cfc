@@ -167,6 +167,7 @@ globalEncryptionKeySize
 					globalURLKeyProduct = {fieldType="text",defaultValue="sp"},
 					globalURLKeyProductType = {fieldType="text",defaultValue="spt"},
 					globalWeightUnitCode = {fieldType="select",defaultValue="lb"},
+					globalPrintMethod = {fieldType="select",defaultValue="Browser"},
 					
 					// Image
 					imageAltString = {fieldType="text",defaultValue=""},
@@ -306,6 +307,8 @@ globalEncryptionKeySize
 					optionSL.addSelect('unitName', 'name');
 					optionSL.addSelect('unitCode', 'value');
 					return optionSL.getRecords();
+				case "globalPrintMethod":
+					return ['Browser','Applet'];
 				case "shippingMethodQualifiedRateSelection" :
 					return [{name='Sort Order', value='sortOrder'}, {name='Lowest Rate', value='lowest'}, {name='Highest Rate', value='highest'}];
 				case "shippingMethodRateAdjustmentType" :

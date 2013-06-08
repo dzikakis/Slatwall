@@ -53,10 +53,14 @@ Notes:
 		<link href="#request.slatwallScope.getBaseURL()#/org/Hibachi/HibachiAssets/css/global.css" rel="stylesheet">
 		
 		<cfif arrayLen($.slatwall.getPrintQueue()) and request.context.slatAction neq "admin:print.default">
-			<script type="text/javascript">
-				var printWindow = window.open('#request.slatwallScope.getBaseURL()#?slatAction=admin:print.default', '_blank');
-				printWindow.print();
-			</script>
+			<cfif $.slatwall.setting('globalPrintMethod') eq 'Applet'>
+			<!--- Todo: Setup jzebra applet --->
+			<cfelse>
+				<script type="text/javascript">
+					var printWindow = window.open('#request.slatwallScope.getBaseURL()#?slatAction=admin:print.default', '_blank');
+					printWindow.print();
+				</script>
+			</cfif> 
 		</cfif>
 	</head>
 	<body>
