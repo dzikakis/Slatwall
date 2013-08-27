@@ -51,6 +51,11 @@ component output="false" accessors="true" extends="HibachiProcess" {
 	// Injected Entity
 	property name="order";
 
+	// Injected properties
+	property name="amount";
+	property name="paymentMethod";
+	property name="orderPaymentType";
+
 	// Data Properties
 	property name="accountPaymentMethodID" hb_rbKey="entity.accountPaymentMethod" hb_formFieldType="select";
 	property name="newOrderPayment" cfc="OrderPayment" fieldType="many-to-one" persistent="false" fkcolumn="orderPaymentID";
@@ -66,6 +71,29 @@ component output="false" accessors="true" extends="HibachiProcess" {
 	public any function setupDefaults() {
 		variables.accountAddressID = getAccountAddressIDOptions()[1]['value'];
 		variables.accountPaymentMethodID = getAccountPaymentMethodIDOptions()[1]['value'];
+	}
+
+	public any function afterPopulate() {
+
+		// Make sure that the currencyCode matches the order
+		newOrderPayment.setCurrencyCode( getOrder().getCurrencyCode() );
+
+		// If this is an existing account payment method, then we can pull the data from there
+		if( len(getAccountPaymentMethodID()) ) {
+			// Setup the newOrderPayment from the existing payment method
+			var accountPaymentMethod = getService("accountService").getAccountPaymentMethod( getAccountPaymentMethodID() );
+			//writeDump(var=accountPaymentMethod,top=2);abort;
+
+			var newsOrderPayment= getService("orderService").newOrderPayment();;//.copyFromAccountPaymentMethod( accountPaymentMethod );	
+				newsOrderPayment.copyFromAccountPaymentMethod( accountPaymentMethod );
+		// If they just used an exiting account address then we can try that by itself
+		} else if(!isNull(getAccountAddressID()) && len(getAccountAddressID())) {
+			//var accountAddress = getService("accountService").getAccountAddress( getAccountAddressID() );
+			
+			//if(!isNull(accountAddress)) {
+			//	getNewOrderPayment().setBillingAddress( accountAddress.getAddress().copyAddress( true ) );
+			//}
+		}
 	}
 	
 	public string function getAccountPaymentMethodID() {
