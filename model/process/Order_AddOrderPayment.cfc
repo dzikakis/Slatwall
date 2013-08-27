@@ -75,24 +75,19 @@ component output="false" accessors="true" extends="HibachiProcess" {
 
 	public any function afterPopulate() {
 
-		// Make sure that the currencyCode matches the order
-		newOrderPayment.setCurrencyCode( getOrder().getCurrencyCode() );
 
 		// If this is an existing account payment method, then we can pull the data from there
 		if( len(getAccountPaymentMethodID()) ) {
 			// Setup the newOrderPayment from the existing payment method
 			var accountPaymentMethod = getService("accountService").getAccountPaymentMethod( getAccountPaymentMethodID() );
-			//writeDump(var=accountPaymentMethod,top=2);abort;
-
-			var newsOrderPayment= getService("orderService").newOrderPayment();;//.copyFromAccountPaymentMethod( accountPaymentMethod );	
-				newsOrderPayment.copyFromAccountPaymentMethod( accountPaymentMethod );
+			getNewOrderPayment().copyFromAccountPaymentMethod( accountPaymentMethod );
 		// If they just used an exiting account address then we can try that by itself
 		} else if(!isNull(getAccountAddressID()) && len(getAccountAddressID())) {
-			//var accountAddress = getService("accountService").getAccountAddress( getAccountAddressID() );
+			var accountAddress = getService("accountService").getAccountAddress( getAccountAddressID() );
 			
-			//if(!isNull(accountAddress)) {
-			//	getNewOrderPayment().setBillingAddress( accountAddress.getAddress().copyAddress( true ) );
-			//}
+			if(!isNull(accountAddress)) {
+				getNewOrderPayment().setBillingAddress( accountAddress.getAddress().copyAddress( true ) );
+			}
 		}
 	}
 	
@@ -155,7 +150,12 @@ component output="false" accessors="true" extends="HibachiProcess" {
 			variables.paymentMethodIDOptions = [];
 			var epmDetails = getService('paymentService').getEligiblePaymentMethodDetailsForOrder( getOrder() );
 			for(var paymentDetail in epmDetails) {
-				arrayAppend(variables.paymentMethodIDOptions, {name=paymentDetail.paymentMethod.getPaymentMethodName(), value=paymentDetail.paymentMethod.getPaymentMethodID()});
+				arrayAppend(variables.paymentMethodIDOptions, {
+					name = paymentDetail.paymentMethod.getPaymentMethodName(), 
+					value = paymentDetail.paymentMethod.getPaymentMethodID(), 
+					paymentmethodtype = paymentDetail.paymentMethod.getPaymentMethodType(),
+					allowsaveflag = paymentDetail.paymentMethod.getAllowSaveFlag()
+					});
 			}
 		}
 		return variables.paymentMethodIDOptions;
