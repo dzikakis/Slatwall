@@ -518,7 +518,7 @@ component extends="HibachiService" persistent="false" accessors="true" output="f
 			arguments.processObject.addError("promotionCode", rbKey('validate.promotionCode.invaliddatetime'));
 		} else if (arrayLen(pc.getAccounts()) && !pc.hasAccount(arguments.order.getAccount())) {
 			arguments.processObject.addError("promotionCode", rbKey('validate.promotionCode.invalidaccount'));
-		} else if( !isNull(pc.getMaximumAccountUseCount()) && pc.getMaximumAccountUseCount() <= getPromotionService().getPromotionCodeAccountUseCount(pc, arguments.order.getAccount()) ) {
+		} else if( !isNull(pc.getMaximumAccountUseCount()) && !isNull(arguments.order.getAccount()) && pc.getMaximumAccountUseCount() <= getPromotionService().getPromotionCodeAccountUseCount(pc, arguments.order.getAccount()) ) {
 			arguments.processObject.addError("promotionCode", rbKey('validate.promotionCode.overMaximumAccountUseCount'));
 		} else if( !isNull(pc.getMaximumUseCount()) && pc.getMaximumUseCount() <= getPromotionService().getPromotionCodeUseCount(pc) ) {
 			arguments.processObject.addError("promotionCode", rbKey('validate.promotionCode.overMaximumUseCount'));
@@ -613,9 +613,9 @@ component extends="HibachiService" persistent="false" accessors="true" output="f
 			this.deleteOrder( arguments.order );
 			
 		// Otherwise we can just remove the account so that it isn't remember as an open cart for this account
-		} else {
+		} else if(!isNull(order.getAccount())) {
 			
-			order.setAccount( javaCast("null", "") );
+			order.removeAccount();
 		}
 		
 		return this.newOrder();
