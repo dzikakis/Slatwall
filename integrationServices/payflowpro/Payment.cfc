@@ -131,7 +131,7 @@ component accessors="true" output="false" displayname="PayFlowPro" implements="S
 		
 		// If this is a credit, then we want to use the originalAuthorizationID
 		if(arguments.requestBean.getTransactionType() eq "credit") {
-			arrayAppend(paymentData,"ORIGID=#requestBean.getOriginalProviderTransactionID()#");
+			arrayAppend(paymentData,"ORIGID=#requestBean.getOriginalChargeProviderTransactionID()#");
 			
 		// If this is a delayed capture we want to use the preAuthorizationTransactionID
 		} else if (arguments.requestBean.getTransactionType() eq "chargePreAuthorization") {
@@ -266,12 +266,13 @@ component accessors="true" output="false" displayname="PayFlowPro" implements="S
 				response.setAmountCharged(requestBean.getTransactionAmount());
 			} else if(requestBean.getTransactionType() == "credit") {
 				response.setAmountCredited(requestBean.getTransactionAmount());
+			} else if(requestBean.getTransactionType() == "generateToken") {
+				response.setProviderToken(responseData["pnref"]);		
 			}
 		}
 		
 		response.setTransactionID(responseData["pnref"]);
 		response.setAuthorizationCode(responseData["authcode"]);
-		response.setProviderToken(responseData["pnref"]);
 		
 		if(responseData["avsaddr"] == 'Y' && responseData["avszip"] == 'Y') {
 			response.setAVSCode("Y");

@@ -57,7 +57,7 @@ component displayname="Content" entityname="SlatwallContent" table="SwContent" p
 	property name="productListingPageFlag" ormtype="boolean";
 	
 	// CMS Properties
-	property name="cmsContentID" ormtype="string";
+	property name="cmsContentID" ormtype="string" index="RI_CMSCONTENTID";
 	
 	// Related Object Properties (many-to-one)
 	property name="site" cfc="Site" fieldtype="many-to-one" fkcolumn="siteID";
@@ -139,26 +139,6 @@ component displayname="Content" entityname="SlatwallContent" table="SwContent" p
 	}    
 	public void function removeChildContent(required any childContent) {    
 		arguments.childContent.removeParentContent( this );    
-	}
-	
-	// Categories (many-to-many - owner)    
-	public void function addCategory(required any category) {    
-		if(arguments.category.isNew() or !hasCategory(arguments.category)) {    
-			arrayAppend(variables.categories, arguments.category);    
-		}    
-		if(isNew() or !arguments.category.hasContent( this )) {    
-			arrayAppend(arguments.category.getContents(), this);    
-		}    
-	}    
-	public void function removeCategory(required any category) {    
-		var thisIndex = arrayFind(variables.categories, arguments.category);    
-		if(thisIndex > 0) {    
-			arrayDeleteAt(variables.categories, thisIndex);    
-		}    
-		var thatIndex = arrayFind(arguments.category.getContents(), this);    
-		if(thatIndex > 0) {    
-			arrayDeleteAt(arguments.category.getContents(), thatIndex);    
-		}    
 	}
 	
 	// Skus (many-to-many - inverse)

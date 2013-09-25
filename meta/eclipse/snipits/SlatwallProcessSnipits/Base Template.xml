@@ -1,4 +1,8 @@
-<!---
+<?xml version="1.0" encoding="utf-8"?>
+<snippet filetemplate="false" extension="">
+<name>Base Template</name>
+<help></help>
+<starttext><![CDATA[/*
 
     Slatwall - An Open Source eCommerce Platform
     Copyright (C) ten24, LLC
@@ -45,24 +49,49 @@
 
 Notes:
 
---->
-<cfparam name="rc.product" type="any" />
-<cfparam name="rc.processObject" type="any" />
-<cfparam name="rc.edit" type="boolean" />
+*/
+component output="false" accessors="true" extends="HibachiProcess" {
 
-<cf_HibachiEntityProcessForm entity="#rc.product#" edit="#rc.edit#">
+	// Injected Entity
+	property name="$${objectName}";
 	
-	<cf_HibachiEntityActionBar type="preprocess" object="#rc.product#">
-	</cf_HibachiEntityActionBar>
+	// Lazy / Injected Objects
 	
-	<cf_HibachiPropertyRow>
-		<cf_HibachiPropertyList>
-			<cf_HibachiPropertyDisplay object="#rc.processObject#" property="subscriptionTermID" fieldType="select" valueOptions="#rc.product.getUnusedProductSubscriptionTerms()#" edit="#rc.edit#">
-			<cf_HibachiPropertyDisplay object="#rc.processObject#" property="price" edit="#rc.edit#">
-			<cf_HibachiPropertyDisplay object="#rc.processObject#" property="listPrice" edit="#rc.edit#">
-			<cf_HibachiPropertyDisplay object="#rc.processObject#" property="renewalPrice" edit="#rc.edit#">
-		</cf_HibachiPropertyList>
-	</cf_HibachiPropertyRow>
-	
-</cf_HibachiEntityProcessForm>
+	// New Properties
 
+	// Data Properties (ID's)
+	
+	// Data Properties (Inputs)
+	
+	// Data Properties (Related Entity Populate)
+	
+	// Data Properties (Object / Array Populate)
+	
+	// Option Properties
+	
+	// Helper Properties
+	
+	// ======================== START: Defaults ============================
+	
+	// ========================  END: Defaults =============================
+
+	// =================== START: Lazy Object Helpers ======================
+	
+	// ===================  END: Lazy Object Helpers =======================
+	
+	// ================== START: New Property Helpers ======================
+	
+	// ==================  END: New Property Helpers =======================
+	
+	// ====================== START: Data Options ==========================
+	
+	// ======================  END: Data Options ===========================
+	
+	// ===================== START: Helper Methods =========================
+	
+	// =====================  END: Helper Methods ==========================
+	
+	
+}]]></starttext>
+<endtext><![CDATA[]]></endtext>
+</snippet>

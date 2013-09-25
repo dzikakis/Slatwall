@@ -1,4 +1,4 @@
-/*
+<!---
 
     Slatwall - An Open Source eCommerce Platform
     Copyright (C) ten24, LLC
@@ -45,37 +45,32 @@
 
 Notes:
 
-*/
-component output="false" accessors="true" extends="HibachiProcess" {
+--->
+<cfcomponent extends="Slatwall.meta.tests.unit.SlatwallUnitTestBase">
 
-	// Injected Entity
-	property name="product";
+	<cffunction name="setup">
+		<cfset super.setup() />
+		
+		<cfset variables.dao = request.slatwallScope.getDAO("dataDAO") />
+	</cffunction>
+	
+	<cffunction name="getShortReferenceID_1">
+		
+		<cfset var result = variables.dao.getShortReferenceID( referenceObjectID="", referenceObject="fake-test-object" ) />
+		<cfset assert(result eq "") />
+		
+	</cffunction>
+	
+	<cffunction name="getShortReferenceID_2">
+		
+		<cfset var result = variables.dao.getShortReferenceID( referenceObjectID="fake-test-reference-id", referenceObject="fake-test-object", createNewFlag=true ) />
+		<cfset assert( isNumeric(result) ) />
+		<cfset assert( result gt 0 ) />
+		
+		<cfquery name="rs">
+			DELETE FROM SwShortReference WHERE referenceObjectID = 'fake-test-reference-id' AND referenceObject = 'fake-test-object'
+		</cfquery>
+	</cffunction>
 
-	// Data Properties
-	property name="subscriptionTermID";
-	property name="price" hb_rbKey="entity.sku.price";
-	property name="listPrice" hb_rbKey="entity.sku.listPrice";
-	property name="renewalPrice" hb_rbKey="entity.sku.renewalPrice";
 	
-	public any function getPrice() {
-		if(!structKeyExists(variables, "price")) {
-			variables.price = getProduct().getPrice();
-		}
-		return variables.price;
-	}
-	
-	public any function getListPrice() {
-		if(!structKeyExists(variables, "listPrice")) {
-			variables.listPrice = getProduct().getListPrice();
-		}
-		return variables.listPrice;
-	}
-	
-	public any function getRenewalPrice() {
-		if(!structKeyExists(variables, "renewalPrice")) {
-			variables.renewalPrice = getProduct().getRenewalPrice();
-		}
-		return variables.renewalPrice;
-	}
-	
-}
+</cfcomponent>
