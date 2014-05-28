@@ -98,9 +98,9 @@ component displayname="Product" entityname="SlatwallProduct" table="SwProduct" p
 	
 	// Audit Properties
 	property name="createdDateTime" hb_populateEnabled="false" ormtype="timestamp";
-	property name="createdByAccountID" hb_populateEnabled="false" ormtype="string";
+	property name="createdByAccount" hb_populateEnabled="false" cfc="Account" fieldtype="many-to-one" fkcolumn="createdByAccountID";
 	property name="modifiedDateTime" hb_populateEnabled="false" ormtype="timestamp";
-	property name="modifiedByAccountID" hb_populateEnabled="false" ormtype="string";
+	property name="modifiedByAccount" hb_populateEnabled="false" cfc="Account" fieldtype="many-to-one" fkcolumn="modifiedByAccountID";
 	
 	// Non-Persistent Properties
 	property name="allowBackorderFlag" type="boolean" persistent="false";
@@ -372,10 +372,10 @@ component displayname="Product" entityname="SlatwallProduct" table="SwProduct" p
 		return getService("productService").getProductSkusBySelectedOptions(arguments.selectedOptions,this.getProductID());
 	}
 	
-	public any function getSkuOptionDetails(string selectedOptionIDList="") {
+	public any function getSkuOptionDetails(string selectedOptionIDList="",string locationID="",string quantityType="QATS") {
 		
 		// Setup return structure
-		var skuOptionDetials = {};
+		var skuOptionDetails = {};
 		
 		// Get all the skus for this product with options fetched
 		var skus = getService("skuService").getProductSkus(product=this, sorted=false, fetchOptions=true);
@@ -390,7 +390,6 @@ component displayname="Product" entityname="SlatwallProduct" table="SwProduct" p
 				for(var option in sku.getOptions()) {
 					if(listFindNoCase(arguments.selectedOptionIDList, option.getOptionID())) {
 						selectedOptionGroupsByOptionID[ option.getOptionID() ] = option.getOptionGroup().getOptionGroupID();
-						break;
 					}
 				}
 				if(structCount(selectedOptionGroupsByOptionID) == listLen(arguments.selectedOptionIDList)) {
@@ -422,22 +421,28 @@ component displayname="Product" entityname="SlatwallProduct" table="SwProduct" p
 				var ogCode = option.getOptionGroup().getOptionGroupCode();
 				
 				// Create a struct for this optionGroup if it doesn't exist
-				if(!structKeyExists(skuOptionDetials, ogCode)) {
-					skuOptionDetials[ ogCode ] = {};
-					skuOptionDetials[ ogCode ][ "options" ] = [];
-					skuOptionDetials[ ogCode ][ "optionGroupName" ] = option.getOptionGroup().getOptionGroupName();
-					skuOptionDetials[ ogCode ][ "optionGroupCode" ] = option.getOptionGroup().getOptionGroupCode();
-					skuOptionDetials[ ogCode ][ "optionGroupID" ] = option.getOptionGroup().getOptionGroupID();
-					skuOptionDetials[ ogCode ][ "sortOrder" ] = option.getOptionGroup().getSortOrder();
+				if(!structKeyExists(skuOptionDetails, ogCode)) {
+					skuOptionDetails[ ogCode ] = {};
+					skuOptionDetails[ ogCode ][ "options" ] = [];
+					skuOptionDetails[ ogCode ][ "optionGroupName" ] = option.getOptionGroup().getOptionGroupName();
+					skuOptionDetails[ ogCode ][ "optionGroupCode" ] = option.getOptionGroup().getOptionGroupCode();
+					skuOptionDetails[ ogCode ][ "optionGroupID" ] = option.getOptionGroup().getOptionGroupID();
+					skuOptionDetails[ ogCode ][ "sortOrder" ] = option.getOptionGroup().getSortOrder();
 				}
 				
+				//Setup getQuantity argumentCollection
+				var quantityArguments={quantityType=arguments.quantityType};
+				if(arguments.locationID neq ""){
+					quantityArguments['locationID']=arguments.locationID;
+				}
+
 				// Create a struct for this option if one doesn't exist
 				var existingOptionFound = false;
-				for(var existingOption in skuOptionDetials[ ogCode ][ "options" ]) {
+				for(var existingOption in skuOptionDetails[ ogCode ][ "options" ]) {
 					if( existingOption.optionID == option.getOptionID() ) {
-						existingOption['totalQATS'] += sku.getQuantity("QATS");
+						existingOption['totalQATS'] += sku.getQuantity(argumentCollection=quantityArguments);
 						if(allSelectedInSku) {
-							existingOption['selectedQATS'] += sku.getQuantity("QATS");	
+							existingOption['selectedQATS'] = sku.getQuantity(argumentCollection=quantityArguments);	
 						}
 						existingOptionFound = true;
 						break;
@@ -450,18 +455,18 @@ component displayname="Product" entityname="SlatwallProduct" table="SwProduct" p
 					newOption['optionName'] = option.getOptionName();
 					newOption['name'] = option.getOptionName();
 					newOption['value'] = option.getOptionID();
-					newOption['totalQATS'] = sku.getQuantity("QATS");
+					newOption['totalQATS'] = sku.getQuantity(argumentCollection=quantityArguments);
 					newOption['selectedQATS'] = 0;
 					if(allSelectedInSku) {
-						newOption['selectedQATS'] = sku.getQuantity("QATS");	
+						newOption['selectedQATS'] = sku.getQuantity(argumentCollection=quantityArguments);	
 					}
-					arrayAppend(skuOptionDetials[ ogCode ].options, newOption);
+					arrayAppend(skuOptionDetails[ ogCode ].options, newOption);
 				}
 			}
 			
 		}
 		
-		return skuOptionDetials;
+		return skuOptionDetails;
 	}
 	
 	public struct function getCrumbData(required string path, required string siteID, required array baseCrumbArray) {

@@ -164,6 +164,23 @@ component output="false" accessors="true" extends="Slatwall.org.Hibachi.HibachiS
 		return variables.productSmartList;
 	}
 	
+	// Product Smart List
+	public any function getSkuSmartList() {
+		if(!structKeyExists(variables, "skuSmartList")) {
+			variables.skuSmartList = getService("skuService").getSkuSmartList(data=url);
+			variables.skuSmartList.setSelectDistinctFlag( 1 );
+			variables.skuSmartList.addFilter('activeFlag', 1);
+			variables.skuSmartList.addFilter('publishedFlag', 1);
+			variables.skuSmartList.addRange('calculatedQATS', '1^');
+			if(isBoolean(getContent().getProductListingPageFlag()) && getContent().getProductListingPageFlag() && isBoolean(getContent().setting('contentIncludeChildContentProductsFlag')) && getContent().setting('contentIncludeChildContentProductsFlag')) {
+				variables.skuSmartList.addWhereCondition(" EXISTS(SELECT sc.contentID FROM SlatwallContent sc INNER JOIN sc.listingProducts slp WHERE sc.contentIDPath LIKE '%#getContent().getContentID()#%' AND slp.productID = aslatwallproduct.productID) ");
+			} else if(isBoolean(getContent().getProductListingPageFlag()) && getContent().getProductListingPageFlag()) {
+				variables.skuSmartList.addFilter('listingPages.contentID',getContent().getContentID());
+			}
+		}
+		return variables.skuSmartList;
+	}
+
 	// ================= Queue Helper Methods =====================
 	
 	// Email
@@ -266,6 +283,10 @@ component output="false" accessors="true" extends="Slatwall.org.Hibachi.HibachiS
 	
 	public any function getProductList() {
 		return getProductSmartList();
+	}
+	
+	public any function getSkuList() {
+		return getSkuSmartList();
 	}
 	
 	public any function getCurrentProductSmartList() {

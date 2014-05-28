@@ -77,11 +77,13 @@ component output="false" accessors="true" {
 	public void function productSkuOptionDetails( required struct rc ) {
 		param name="arguments.rc.productID" type="string" default="";
 		param name="arguments.rc.selectedOptionIDList" type="string" default="";
+		param name="arguments.rc.locationID" type="string" default="";
+		param name="arguments.rc.quantityType" type="string" default="QATS";
 		
 		var product = getProductService().getProduct( arguments.rc.productID );
 		
 		if(!isNull(product) && product.getActiveFlag() && product.getPublishedFlag()) {
-			rc.ajaxResponse["skuOptionDetails"] = product.getSkuOptionDetails( arguments.rc.selectedOptionIDList );
+			rc.ajaxResponse["skuOptionDetails"] = product.getSkuOptionDetails( arguments.rc.selectedOptionIDList, arguments.rc.locationID,arguments.rc.quantityType);
 		}
 	}
 	
