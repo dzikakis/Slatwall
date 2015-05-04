@@ -5,12 +5,13 @@
 <cfparam name="attributes.subsystem" type="string" default="#request.context.fw.getSubsystem( request.context[ request.context.fw.getAction() ])#">
 <cfparam name="attributes.section" type="string" default="#request.context.fw.getSection( request.context[ request.context.fw.getAction() ])#">
 <cfparam name="attributes.tabLocation" type="string" default="left" />
+<cfparam name="attributes.activeTab" default="tabSystem" />
 
 <cfif (not isObject(attributes.object) || not attributes.object.isNew()) and (not structKeyExists(request.context, "modal") or not request.context.modal)>
 	<cfif thisTag.executionMode is "end">
 
 		<cfparam name="thistag.tabs" default="#arrayNew(1)#" />
-		<cfparam name="activeTab" default="tabSystem" />
+		
 
 		<cfloop array="#thistag.tabs#" index="tab">
 			<!--- Make sure there is a view --->
@@ -49,8 +50,8 @@
 			</cfif>
 		</cfloop>
 
-		<cfif arrayLen(thistag.tabs)>
-			<cfset activeTab = thistag.tabs[1].tabid />
+		<cfif arrayLen(thistag.tabs) && attributes.activeTab eq 'tabSystem'>
+			<cfset attributes.activeTab = thistag.tabs[1].tabid />
 		</cfif>
 
 		<cfoutput>
@@ -67,7 +68,7 @@
 					<div class="row collapse navbar-collapse" id="main-tab-nav">
 						<ul class="nav nav-tabs">
 							<cfloop array="#thistag.tabs#" index="tab">
-								<li <cfif activeTab eq tab.tabid>class="active"</cfif>><a href="###tab.tabid#" data-toggle="tab">#tab.text#<cfif len(tab.count) and tab.count gt 0> <span class="badge pull-right" style="padding-left:10px;">#tab.count#</span></cfif></a></li>
+								<li <cfif attributes.activeTab eq tab.tabid>class="active"</cfif>><a href="###tab.tabid#" data-toggle="tab">#tab.text#<cfif len(tab.count) and tab.count gt 0> <span class="badge pull-right" style="padding-left:10px;">#tab.count#</span></cfif></a></li>
 							</cfloop>
 							<cfif isObject(attributes.object)>
 								<li><a href="##tabSystem" data-toggle="tab">#attributes.hibachiScope.rbKey('define.system')#</a></li>
@@ -78,7 +79,7 @@
 				<div class="tab-content col-sm-12">
 					<cfloop array="#thistag.tabs#" index="tab">
 						<cfoutput>
-							<div <cfif activeTab eq tab.tabid> class="tab-pane active"<cfelse> class="tab-pane"</cfif> id="#tab.tabid#">
+							<div <cfif attributes.activeTab eq tab.tabid> class="tab-pane active"<cfelse> class="tab-pane"</cfif> id="#tab.tabid#">
 								#tab.tabcontent#
 							</div>
 						</cfoutput>

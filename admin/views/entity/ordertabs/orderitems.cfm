@@ -63,9 +63,10 @@ Notes:
 	<!--- If in edit and order is of correct status then we can add sale order items --->
 	<cfif rc.edit and listFindNoCase("ostNotPlaced,ostNew,ostProcessing,ostOnHold", rc.order.getOrderStatusType().getSystemCode())>
 		<!--- Tabs for Adding Sale Order Items Sku and Stock --->
-		<hb:HibachiTabGroup tabLocation="top">
+		<cfset activetab=iif(isnull(rc.order.getDefaultStockLocation()),DE("soiaddsku"),DE("soiaddstock"))>
+		<hb:HibachiTabGroup tabLocation="top" activeTab="#activetab#">
 		<hb:HibachiTab tabid="soiaddsku" view="admin:entity/ordertabs/addsku" text="#$.slatwall.rbKey('define.add')# #$.slatwall.rbKey('entity.sku')#" />
-		<hb:HibachiTab tabid="soiaddstock" view="admin:entity/ordertabs/addstock" text="#$.slatwall.rbKey('define.add')# #$.slatwall.rbKey('entity.stock')#" />
+		<hb:HibachiTab tabid="soiaddstock"  activeTab="#activetab#" view="admin:entity/ordertabs/addstock" text="#$.slatwall.rbKey('define.add')# #$.slatwall.rbKey('entity.stock')#" />
 		<!--- Tabs for Adding Return Order Items Sku and Stock --->
 		<hb:HibachiTab tabid="soiaddreturnsku" view="admin:entity/ordertabs/addreturnsku" text="#$.slatwall.rbKey('define.add')# Return #$.slatwall.rbKey('entity.sku')#" />
 		<hb:HibachiTab tabid="soiaddreturnstock" view="admin:entity/ordertabs/addreturnstock" text="#$.slatwall.rbKey('define.add')# Return #$.slatwall.rbKey('entity.stock')#" />
