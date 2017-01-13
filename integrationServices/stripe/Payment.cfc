@@ -254,7 +254,11 @@ component accessors="true" output="false" displayname="Stripe" implements="Slatw
             // populate response
             if (responseData.success)
             {
-                responseBean.setAmountCharged(responseData.result.amount / 100); // need to convert back to decimal from integer
+                if(structKeyExists(responseData.result,"amount_refunded")){
+                    responseBean.setAmountCharged((responseData.result.amount - responseData.result.amount_refunded) / 100); // Ensure the actual amount charged is recorded - stripe does a full capture and reports a refund if you attempt a partial capture.
+                }else{
+                    responseBean.setAmountCharged(responseData.result.amount / 100); // need to convert back to decimal from integer
+                }
                 responseBean.setAuthorizationCodeInvalidFlag(false);
                 
                 // add messages to response
