@@ -53,7 +53,7 @@ Notes:
 
 <hb:HibachiListingDisplay smartlist="#rc.$.slatwall.getService('VendorOrderService').getStockReceiverSmartList(rc.vendorOrder.getVendorOrderID())#" 
                            recorddetailaction="admin:entity.detailStockReceiver"
-						   recorddetailmodal="true" 
+						   recorddetailmodal="false" 
                            recorddetailquerystring="redirectAction=admin:entity.detailvendororder&vendorOrderID=#rc.VendorOrder.getVendorOrderID()#">
 	
 	<hb:HibachiListingColumn tdclass="primary" propertyidentifier="createdDateTime"/>
